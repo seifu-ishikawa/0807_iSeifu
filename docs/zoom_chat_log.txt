@@ -81,3 +81,6 @@ Password: RegularUser2024!@#
 
 坪内弘毅 12:55
 ログインのID/PWを入力せずにログインできるゲストモードを開発環境では設定したいです。ログイン画面にゲストモードでログインのボタンを作り、実装して。
+
+Bongin 13:00
+pnpm lint && pnpm type-chec
