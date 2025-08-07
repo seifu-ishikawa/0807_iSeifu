@@ -74,3 +74,7 @@ https://gpt-oss.com/
 
 坪内弘毅 12:33
 以下のような学生と企業のマッチングアプリを作りたいです。主要画面から全部の画面を作り、ルーティングまでして画面遷移がされる全画面を開発して。最初、vercelでDeployし、DBはSupabaseを想定。
+
+坪内弘毅 12:42
+以下のメアドでログインできるように,Supabaseのauthを設定する。user+1750772130206@example.com 
+Password: RegularUser2024!@#
