@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>テトリス</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+    html,body {
+        height:100%;
+        margin:0;
+        background:#111;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-family:Arial,Helvetica,sans-serif;
+        color:#fff;
+    }
+    #game {
+        text-align:center;
+    }
+    canvas {
+        background:#000;
+        border:2px solid #555;
+        display:block;
+        margin:auto;
+    }
+    #score {
+        margin-top:10px;
+        font-size:1.2rem;
+    }
+</style>
+</head>
+<body>
+<div id="game">
+    <canvas id="tetris" width="200" height="400"></canvas>
+    <div id="score">Score: 0</div>
+</div>
+
+<script>
+/* ───────────────────────────────────────────────
+   Simple Tetris – 1‑file version
+   Author: ChatGPT (2025)
+   License: MIT (feel free to modify)
+   ─────────────────────────────────────────────── */
+
+const canvas  = document.getElementById('tetris');
+const ctx     = canvas.getContext('2d');
+const COLS    = 10;
+const ROWS    = 20;
+const BLOCK   = 20;                 // size of one cell (px)
+const dropInterval = 1000;          // ms per automatic drop
+
+// ----- Colors (index === piece id) -----
+const colors = [
+    null,               // 0 (empty)
+    '#00f0f0',          // 1 I – cyan
+    '#0000f0',          // 2 J – blue
+    '#f0a000',          // 3 L – orange
+    '#f0f000',          // 4 O – yellow
+    '#00f000',          // 5 S – green
+    '#a000f0',          // 6 T – purple
+    '#f00000'           // 7 Z – red
+];
+
+// ----- Create empty board -----
+function createMatrix(w, h) {
+    const matrix = [];
+    while (h--) {
+        matrix.push(new Array(w).fill(0));
+    }
+    return matrix;
+}
+const board = createMatrix(COLS, ROWS);
+
+// ----- Tetromino definitions -----
+function createPiece(type) {
+    switch (type) {
+        case 'I':
+            return [
+                [0,0,0,0],
+                [1,1,1,1],
+                [0,0,0,0],
+                [0,0,0,0]
+            ];
+        case 'J':
+            return [
+                [2,0,0],
+                [2,2,2],
+                [0,0,0],
+            ];
+        case 'L':
+            return [
+                [0,0,3],
+                [3,3,3],
+                [0,0,0],
+            ];
+        case 'O':
+            return [
+                [4,4],
+                [4,4],
+            ];
+        case 'S':
+            return [
+                [0,5,5],
+                [5,5,0],
+                [0,0,0],
+            ];
+        case 'T':
+            return [
+                [0,6,0],
+                [6,6,6],
+                [0,0,0],
+            ];
+        case 'Z':
+            return [
+                [7,7,0],
+                [0,7,7],
+                [0,0,0],
+            ];
+    }
+}
+
+// ----- Player object -----
+const player = {
+    pos: {x: 0, y: 0},
+    matrix: null,
+    score: 0
+};
+
+// ----- Collision detection -----
+function collide(board, player) {
+    const m = player.matrix;
+    const o = player.pos;
+    for (let y = 0; y < m.length; ++y) {
+        for (let x = 0; x < m[y].length; ++x) {
+            if (m[y][x] !== 0) {
+                const boardY = y + o.y;
+                const boardX = x + o.x;
+                // out of bounds vertically → collides
+                if (boardY >= ROWS ||
+                    boardX < 0 ||
+                    boardX >= COLS ||
+                    (boardY >= 0 && board[boardY][boardX] !== 0)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+// ----- Merge piece into board (lock) -----
+function merge(board, player) {
+    player.matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                board[y + player.pos.y][x + player.pos.x] = value;
+            }
+        });
+    });
+}
+
+// ----- Board drawing -----
+function drawMatrix(matrix, offset) {
+    matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                ctx.fillStyle = colors[value];
+                ctx.fillRect(
+                    (x + offset.x) * BLOCK,
+                    (y + offset.y) * BLOCK,
+                    BLOCK, BLOCK
+                );
+                ctx.strokeStyle = '#111';
+                ctx.strokeRect(
+                    (x + offset.x) * BLOCK,
+                    (y + offset.y) * BLOCK,
+                    BLOCK, BLOCK
+                );
+            }
+        });
+    });
+}
+
+function draw() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawMatrix(board, {x:0, y:0});
+    drawMatrix(player.matrix, player.pos);
+}
+
+// ----- Piece movement -----
+function playerMove(dir) {
+    player.pos.x += dir;
+    if (collide(board, player)) {
+        player.pos.x -= dir;
+    }
+}
+
+function playerDrop() {
+    player.pos.y++;
+    if (collide(board, player)) {
+        player.pos.y--;
+        merge(board, player);
+        playerReset();
+        clearLines();
+        updateScore();
+    }
+    dropCounter = 0;
+}
+
+// Hard drop (space)
+function playerHardDrop() {
+    while (!collide(board, player)) {
+        player.pos.y++;
+    }
+    player.pos.y--;
+    merge(board, player);
+    playerReset();
+    clearLines();
+    updateScore();
+}
+
+// ----- Rotation -----
+function rotate(matrix, dir) {
+    // transpose
+    for (let y = 0; y < matrix.length; ++y) {
+        for (let x = 0; x < y; ++x) {
+            [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+        }
+    }
+    // reverse rows (clockwise) or columns (counter‑clockwise)
+    if (dir > 0) {
+        matrix.forEach(row => row.reverse());
+    } else {
+        matrix.reverse();
+    }
+    return matrix;
+}
+
+function playerRotate(dir) {
+    const original = player.matrix.map(row => row.slice());
+    rotate(player.matrix, dir);
+    if (collide(board, player)) {
+        player.matrix = original; // revert rotation
+    }
+}
+
+// ----- Line clearing & scoring -----
+function clearLines() {
+    let lines = 0;
+    outer: for (let y = ROWS - 1; y >= 0; --y) {
+        if (board[y].every(v => v !== 0)) {
+            const row = board.splice(y, 1)[0]; // remove
+            board.unshift(new Array(COLS).fill(0)); // add empty on top
+            ++lines;
+            ++y; // re‑check same line after shift
+        }
+    }
+    if (lines > 0) {
+        // Simple scoring: 100 pts per line
+        player.score += lines * 100;
+    }
+}
+
+// ----- Score UI -----
+function updateScore() {
+    document.getElementById('score').innerText = 'Score: ' + player.score;
+}
+
+// ----- New piece -----
+function playerReset() {
+    const pieces = 'IJLOSTZ';
+    const type = pieces[Math.floor(Math.random() * pieces.length)];
+    player.matrix = createPiece(type);
+    player.pos.y = 0;
+    player.pos.x = Math.floor((COLS - player.matrix[0].length) / 2);
+    // Game over check
+    if (collide(board, player)) {
+        // clear board
+        board.forEach(row => row.fill(0));
+        player.score = 0;
+        updateScore();
+        alert('Game Over');
+    }
+}
+
+// ----- Main loop -----
+let dropCounter = 0;
+let lastTime = 0;
+function update(time = 0) {
+    const delta = time - lastTime;
+    lastTime = time;
+    dropCounter += delta;
+    if (dropCounter > dropInterval) {
+        playerDrop();
+    }
+    draw();
+    requestAnimationFrame(update);
+}
+
+// ----- Input handling -----
+document.addEventListener('keydown', e => {
+    switch (e.key) {
+        case 'ArrowLeft':
+            e.preventDefault();
+            playerMove(-1);
+            break;
+        case 'ArrowRight':
+            e.preventDefault();
+            playerMove(1);
+            break;
+        case 'ArrowDown':
+            e.preventDefault();
+            playerDrop();
+            break;
+        case 'ArrowUp':
+            e.preventDefault();
+            playerRotate(1);
+            break;
+        case ' ':
+            e.preventDefault();
+            playerHardDrop();
+            break;
+    }
+});
+
+// ----- Start -----
+playerReset();
+update();
+</script>
+</body>
+</html>

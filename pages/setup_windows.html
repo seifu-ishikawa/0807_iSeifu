@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Windows Setup Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-button.secondary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button.secondary:hover {
+            background: #f7f8fa;
+        }
+
+        /* メインコンテンツ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 2rem 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: #667eea;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem;
+            color: #4a5568;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+            color: #718096;
+        }
+
+        .section {
+            margin: 2rem 0;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .requirement-card {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .command-box {
+            background: #1e293b;
+            color: #10b981;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .copy-button:hover {
+            background: #2d3748;
+        }
+
+        .step-container {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .checklist {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .checklist-item:hover {
+            background: #f7fafc;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+
+        .tip-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #718096;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .progress-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: -1;
+        }
+
+        .progress-step {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .progress-step.completed {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-button {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🪟 Windows Setup</div>
+            <div class="nav-links">
+                <a href="manual.html" class="nav-button secondary">取扱説明書</a>
+                <a href="setup_windows.html" class="nav-button">Windows Setup</a>
+                <a href="setup_windows.md" class="nav-button secondary">Setup (Markdown)</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>🚀 Claude Code Windows環境構築ガイド</h1>
+            
+            <div class="info-box">
+                <strong>📋 Statement of Work (SOW)</strong><br>
+                Windows 10/11環境でClaude Codeを完全にセットアップするための包括的なガイドです。
+            </div>
+
+            <div class="progress-indicator">
+                <span class="progress-step">準備</span>
+                <span class="progress-step">インストール</span>
+                <span class="progress-step">設定</span>
+                <span class="progress-step">確認</span>
+                <span class="progress-step">完了</span>
+            </div>
+
+            <section class="section">
+                <h2>📊 1. プロジェクト概要</h2>
+                
+                <div class="step-container">
+                    <h3>1.1 目的とスコープ</h3>
+                    <p>このガイドは、Windows環境でClaude Codeを正常に動作させるための完全な手順を提供します。</p>
+                    
+                    <div class="requirements-grid">
+                        <div class="requirement-card">
+                            <h4>🎯 目的</h4>
+                            <ul>
+                                <li>Claude Codeの環境構築</li>
+                                <li>依存関係の設定</li>
+                                <li>動作確認</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>📦 成果物</h4>
+                            <ul>
+                                <li>動作可能な環境</li>
+                                <li>設定完了チェックリスト</li>
+                                <li>トラブルシューティングガイド</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>💻 2. システム要件</h2>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('minimum')">最小要件</button>
+                    <button class="tab" onclick="showTab('recommended')">推奨要件</button>
+                </div>
+                
+                <div id="minimum" class="tab-content active">
+                    <div class="requirements-grid">
+                        <div class="requirement-card">
+                            <h4>OS</h4>
+                            <p>Windows 10 (1903以降)<br>Windows 11</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>メモリ</h4>
+                            <p>8GB RAM以上</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>ストレージ</h4>
+                            <p>10GB以上の空き容量</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>ネットワーク</h4>
+                            <p>インターネット接続必須</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="recommended" class="tab-content">
+                    <div class="requirements-grid">
+                        <div class="requirement-card">
+                            <h4>OS</h4>
+                            <p>Windows 11 最新版</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>メモリ</h4>
+                            <p>16GB RAM以上</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>プロセッサ</h4>
+                            <p>4コア以上</p>
+                        </div>
+                        <div class="requirement-card">
+                            <h4>ストレージ</h4>
+                            <p>SSD推奨</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>⚙️ 3. 事前準備</h2>
+                
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3>PowerShellの設定</h3>
+                    </div>
+                    
+                    <p>管理者権限でPowerShellを起動します：</p>
+                    <ol>
+                        <li>スタートメニューで「PowerShell」を検索</li>
+                        <li>右クリックして「管理者として実行」を選択</li>
+                    </ol>
+                    
+                    <div class="command-box">
+                        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>💡 ヒント:</strong> この設定により、ローカルスクリプトの実行が可能になります。
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>📥 4. インストール手順</h2>
+                
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3>Node.jsのインストール</h3>
+                    </div>
+                    
+                    <div class="download-section">
+                        <h4>Node.js LTS版をダウンロード</h4>
+                        <a href="https://nodejs.org/" target="_blank" class="download-button">
+                            📦 Node.js公式サイト
+                        </a>
+                    </div>
+                    
+                    <p>インストール後、以下のコマンドで確認：</p>
+                    <div class="command-box">
+                        node --version
+                        npm --version
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                    
+                    <div class="success-box">
+                        <strong>✅ 成功例:</strong> v18.0.0以上が表示されればOK
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3>Gitのインストール</h3>
+                    </div>
+                    
+                    <div class="download-section">
+                        <h4>Git for Windowsをダウンロード</h4>
+                        <a href="https://git-scm.com/download/win" target="_blank" class="download-button">
+                            📦 Git公式サイト
+                        </a>
+                    </div>
+                    
+                    <p>インストール後の設定：</p>
+                    <div class="command-box">
+                        git config --global user.name "Your Name"
+                        git config --global user.email "your.email@example.com"
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h3>Visual Studio Code（推奨）</h3>
+                    </div>
+                    
+                    <div class="download-section">
+                        <h4>VS Codeをダウンロード</h4>
+                        <a href="https://code.visualstudio.com/" target="_blank" class="download-button">
+                            📦 VS Code公式サイト
+                        </a>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <strong>💡 重要:</strong> インストール時に「PATHに追加」オプションを有効にしてください。
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">4</span>
+                        <h3>Claude CLIのインストール</h3>
+                    </div>
+                    
+                    <p>npmを使用してClaude CLIをインストール：</p>
+                    <div class="command-box">
+                        npm install -g @anthropic-ai/claude-cli
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                    
+                    <p>インストール確認：</p>
+                    <div class="command-box">
+                        claude --version
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>🔑 5. Claude Codeの設定</h2>
+                
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3>APIキーの取得</h3>
+                    </div>
+                    
+                    <ol>
+                        <li><a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a>にアクセス</li>
+                        <li>アカウントにログイン</li>
+                        <li>API Keysセクションから新規キーを生成</li>
+                    </ol>
+                    
+                    <div class="warning-box">
+                        <strong>⚠️ 注意:</strong> APIキーは安全に保管し、公開しないでください。
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3>環境変数の設定</h3>
+                    </div>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="showEnvTab('temp')">一時設定</button>
+                        <button class="tab" onclick="showEnvTab('permanent')">永続設定</button>
+                    </div>
+                    
+                    <div id="temp-env" class="tab-content active">
+                        <h4>PowerShellで一時設定</h4>
+                        <div class="command-box">
+                            $env:ANTHROPIC_API_KEY = "your-api-key-here"
+                            <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div id="permanent-env" class="tab-content">
+                        <h4>システム環境変数に永続設定</h4>
+                        <ol>
+                            <li>Windowsキー + X → 「システム」</li>
+                            <li>「システムの詳細設定」をクリック</li>
+                            <li>「環境変数」をクリック</li>
+                            <li>ユーザー環境変数に新規追加：
+                                <ul>
+                                    <li>変数名: <code>ANTHROPIC_API_KEY</code></li>
+                                    <li>変数値: 取得したAPIキー</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h3>Claude Codeの初期化</h3>
+                    </div>
+                    
+                    <div class="command-box">
+                        cd C:\Users\YourName\Projects
+                        claude init
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>✅ 6. 動作確認</h2>
+                
+                <div class="step-container">
+                    <h3>基本コマンドのテスト</h3>
+                    
+                    <div class="command-box">
+                        # ヘルプの表示
+                        claude --help
+
+                        # バージョン確認
+                        claude --version
+
+                        # 簡単な質問
+                        claude "Hello, Claude!"
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                    
+                    <div class="success-box">
+                        <strong>✅ 成功:</strong> 各コマンドが正常に実行されれば設定完了です！
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>🔧 7. トラブルシューティング</h2>
+                
+                <div class="step-container">
+                    <h3>よくある問題と解決方法</h3>
+                    
+                    <div class="warning-box">
+                        <h4>問題: 'claude' is not recognized</h4>
+                        <p><strong>解決:</strong></p>
+                        <div class="command-box">
+                            # npmのグローバルパスを確認
+                            npm config get prefix
+                            
+                            # パスを環境変数に追加
+                            $env:PATH += ";$(npm config get prefix)"
+                            <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h4>問題: API認証エラー</h4>
+                        <p><strong>解決:</strong></p>
+                        <div class="command-box">
+                            # APIキーの確認
+                            echo $env:ANTHROPIC_API_KEY
+                            
+                            # 再設定
+                            $env:ANTHROPIC_API_KEY = "sk-ant-..."
+                            <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                        </div>
+                    </div>
+                    
+                    <h3>診断コマンド</h3>
+                    <div class="command-box">
+                        # システム診断
+                        claude doctor
+                        
+                        # ログの確認
+                        Get-Content %USERPROFILE%\.claude\logs\claude.log -Tail 50
+                        <button class="copy-button" onclick="copyToClipboard(this)">📋 Copy</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>📋 8. セットアップチェックリスト</h2>
+                
+                <div class="checklist">
+                    <h3>インストール完了確認</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">Node.js (v18以上) インストール済み</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">Git インストール済み</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">Claude CLI インストール済み</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">APIキー設定済み</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check5">
+                        <label for="check5">環境変数設定済み</label>
+                    </div>
+                </div>
+                
+                <div class="checklist">
+                    <h3>動作確認</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check6">
+                        <label for="check6">`claude --version` が正常に実行</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check7">
+                        <label for="check7">`claude doctor` でエラーなし</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check8">
+                        <label for="check8">簡単なコマンドが実行可能</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check9">
+                        <label for="check9">インタラクティブモードが起動</label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>🚀 9. 次のステップ</h2>
+                
+                <div class="step-container">
+                    <h3>セットアップ完了後の推奨事項</h3>
+                    
+                    <div class="info-box">
+                        <h4>📚 学習リソース</h4>
+                        <ul>
+                            <li><a href="https://docs.anthropic.com/en/docs/claude-code">公式ドキュメント</a>を読む</li>
+                            <li>サンプルプロジェクトで練習</li>
+                            <li>コミュニティフォーラムに参加</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h4>💡 オプション設定</h4>
+                        <ul>
+                            <li>WSL2の設定（Linux環境での実行）</li>
+                            <li>MCPサーバーの設定</li>
+                            <li>IDEプラグインのインストール</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>📞 10. サポート情報</h2>
+                
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <h4>📖 公式ドキュメント</h4>
+                        <ul>
+                            <li><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code Docs</a></li>
+                            <li><a href="https://docs.anthropic.com/">API Documentation</a></li>
+                        </ul>
+                    </div>
+                    <div class="requirement-card">
+                        <h4>💬 コミュニティ</h4>
+                        <ul>
+                            <li><a href="https://github.com/anthropics/claude-code/issues">GitHub Issues</a></li>
+                            <li>Discord Server</li>
+                            <li>Stack Overflow</li>
+                        </ul>
+                    </div>
+                    <div class="requirement-card">
+                        <h4>🔄 アップデート</h4>
+                        <div class="command-box" style="background: #f7fafc; color: #333;">
+                            npm update -g @anthropic-ai/claude-cli
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Claude Code Windows Setup Guide | Created with 💜 by Anthropic</p>
+    </footer>
+
+    <script>
+        // タブ切り替え機能
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                if (tab.textContent.includes(tabName === 'minimum' ? '最小要件' : '推奨要件')) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('minimum').classList.toggle('active', tabName === 'minimum');
+            document.getElementById('recommended').classList.toggle('active', tabName === 'recommended');
+        }
+        
+        function showEnvTab(tabName) {
+            const tabs = document.querySelectorAll('.tabs')[1].querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                if ((tabName === 'temp' && tab.textContent === '一時設定') ||
+                    (tabName === 'permanent' && tab.textContent === '永続設定')) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('temp-env').classList.toggle('active', tabName === 'temp');
+            document.getElementById('permanent-env').classList.toggle('active', tabName === 'permanent');
+        }
+        
+        // コピー機能
+        function copyToClipboard(button) {
+            const codeBox = button.parentElement;
+            const code = codeBox.textContent.replace('📋 Copy', '').trim();
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        // チェックリストの状態を保存
+        document.querySelectorAll('.checklist-item input').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(this.id, this.checked);
+            });
+            
+            // 保存された状態を復元
+            const saved = localStorage.getItem(checkbox.id);
+            if (saved !== null) {
+                checkbox.checked = saved === 'true';
+            }
+        });
+        
+        // プログレスインジケーターの更新
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist-item input');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const total = checkboxes.length;
+            const progress = Math.floor((checked / total) * 5);
+            
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((step, index) => {
+                if (index < progress) {
+                    step.classList.add('completed');
+                } else {
+                    step.classList.remove('completed');
+                }
+            });
+        }
+        
+        // チェックボックスの変更時にプログレスを更新
+        document.querySelectorAll('.checklist-item input').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+        
+        // 初期プログレスの設定
+        updateProgress();
+    </script>
+</body>
+</html>

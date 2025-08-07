@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>英単語暗記フラッシュカード</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ---------- カラーテーマ（CSS変数） ---------- */
+:root{
+  --bg-color:#ffffff;
+  --text-color:#111111;
+  --card-bg:#f5f5f5;
+  --card-text:#111111;
+  --accent-color:#007bff;
+}
+body.dark{
+  --bg-color:#121212;
+  --text-color:#e0e0e0;
+  --card-bg:#1e1e1e;
+  --card-text:#e0e0e0;
+  --accent-color:#90caf9;
+}
+
+/* ---------- 基本レイアウト ---------- */
+html,body{
+  height:100%;
+  margin:0;
+  background:var(--bg-color);
+  color:var(--text-color);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",sans-serif;
+  transition:background .3s,color .3s;
+}
+.container{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  padding:1rem;
+  box-sizing:border-box;
+}
+
+/* ---------- カルーセル ---------- */
+.carousel{
+  position:relative;
+  width:320px;
+  max-width:90vw;
+  height:200px;
+  overflow:hidden;
+  border-radius:12px;
+}
+.track{
+  display:flex;
+  height:100%;
+  transition:transform .5s ease-in-out;
+}
+
+/* ---------- カード（フリップ） ---------- */
+.card{
+  flex:0 0 100%;               /* カードはスライド幅と同じサイズ */
+  position:relative;
+  perspective:1000px;          /* 3D 効果 */
+  cursor:pointer;
+  user-select:none;
+}
+.card-inner{
+  width:100%;
+  height:100%;
+  transition:transform .6s;
+  transform-style:preserve-3d;
+  position:relative;
+}
+.card.is-flipped .card-inner{
+  transform:rotateY(180deg);
+}
+.card-face{
+  position:absolute;
+  width:100%;
+  height:100%;
+  border-radius:12px;
+  backface-visibility:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:var(--card-bg);
+  color:var(--card-text);
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+  padding:1rem;
+  box-sizing:border-box;
+}
+.card-face.front{
+  /* 表側はそのまま */
+}
+.card-face.back{
+  transform:rotateY(180deg);
+}
+.card-face h2{
+  margin:0;
+  font-size:2rem;
+}
+.card-face p{
+  margin:.5rem 0 0;
+  font-size:1.3rem;
+}
+
+/* ---------- ナビゲーション ---------- */
+.nav-button{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:50%;
+  background:var(--accent-color);
+  color:#fff;
+  font-size:1.2rem;
+  cursor:pointer;
+  opacity:.75;
+  transition:opacity .2s;
+}
+.nav-button:hover{opacity:1;}
+.nav-button.prev{left:-20px;}
+.nav-button.next{right:-20px;}
+
+/* ---------- ページインジケータ ---------- */
+.pagination{
+  margin-top:.75rem;
+  display:flex;
+  gap:6px;
+}
+.dot{
+  width:10px;
+  height:10px;
+  background:var(--accent-color);
+  border-radius:50%;
+  opacity:.4;
+  cursor:pointer;
+}
+.dot.active{opacity:1;}
+
+/* ---------- テーマ切替ボタン ---------- */
+.theme-toggle{
+  position:fixed;
+  top:1rem;
+  right:1rem;
+  background:none;
+  border:none;
+  font-size:1.5rem;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="carousel" aria-label="英単語カルーセル">
+    <div class="track" id="track"></div>
+    <button class="nav-button prev" aria-label="前へ" id="prevBtn">&#9664;</button>
+    <button class="nav-button next" aria-label="次へ" id="nextBtn">&#9654;</button>
+  </div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<button class="theme-toggle" id="themeToggle" aria-label="テーマ切替">🌙</button>
+
+<script>
+/* ----------------- 30枚のカードデータ（ハードコーディング） ----------------- */
+const wordList = [
+  {en:"apple",    ja:"りんご"},
+  {en:"book",     ja:"本"},
+  {en:"cat",      ja:"猫"},
+  {en:"dog",      ja:"犬"},
+  {en:"egg",      ja:"卵"},
+  {en:"flower",   ja:"花"},
+  {en:"guitar",   ja:"ギター"},
+  {en:"house",    ja:"家"},
+  {en:"ice",      ja:"氷"},
+  {en:"juice",    ja:"ジュース"},
+  {en:"key",      ja:"鍵"},
+  {en:"lion",     ja:"ライオン"},
+  {en:"mountain", ja:"山"},
+  {en:"night",    ja:"夜"},
+  {en:"orange",   ja:"オレンジ"},
+  {en:"pencil",   ja:"鉛筆"},
+  {en:"queen",    ja:"女王"},
+  {en:"rain",     ja:"雨"},
+  {en:"sun",      ja:"太陽"},
+  {en:"tree",     ja:"木"},
+  {en:"umbrella", ja:"傘"},
+  {en:"violin",   ja:"バイオリン"},
+  {en:"water",    ja:"水"},
+  {en:"xylophone",ja:"木琴"},
+  {en:"yogurt",   ja:"ヨーグルト"},
+  {en:"zebra",    ja:"シマウマ"},
+  {en:"phone",    ja:"電話"},
+  {en:"computer", ja:"コンピュータ"},
+  {en:"window",   ja:"窓"},
+  {en:"river",    ja:"川"}
+];
+
+/* ----------------- カルーセル生成 ----------------- */
+const track = document.getElementById('track');
+const pagination = document.getElementById('pagination');
+let currentIndex = 0;
+
+/* カードとインジケータを作成 */
+function initCarousel() {
+  // カード（フロント/バックを持つ構造）を作る
+  track.innerHTML = wordList.map(item => `
+    <div class="card">
+      <div class="card-inner">
+        <div class="card-face front"><h2>${item.en}</h2></div>
+        <div class="card-face back"><p>${item.ja}</p></div>
+      </div>
+    </div>
+  `).join('');
+
+  // ページインジケータ（ドット）を作る
+  pagination.innerHTML = wordList.map((_, i) => `
+    <div class="dot" data-index="${i}"></div>
+  `).join('');
+
+  // カードクリックでフリップ
+  track.addEventListener('click', e => {
+    const card = e.target.closest('.card');
+    if (card) {
+      card.classList.toggle('is-flipped');
+    }
+  });
+
+  // ドットクリックで直接ジャンプ
+  pagination.addEventListener('click', e => {
+    if (e.target.classList.contains('dot')) {
+      const idx = Number(e.target.dataset.index);
+      currentIndex = idx;
+      updateCarousel();
+    }
+  });
+
+  updateCarousel(); // 初期表示
+}
+
+/* カルーセル位置・インジケータ更新 */
+function updateCarousel() {
+  // カードが裏返っていたら正面に戻す
+  document.querySelectorAll('.card.is-flipped')
+          .forEach(c => c.classList.remove('is-flipped'));
+
+  // スライド位置
+  track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+  // アクティブドットのハイライト
+  const dots = pagination.querySelectorAll('.dot');
+  dots.forEach(dot => {
+    dot.classList.toggle('active', Number(dot.dataset.index) === currentIndex);
+  });
+}
+
+/* 前・次ボタンのハンドラ */
+document.getElementById('prevBtn').addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + wordList.length) % wordList.length;
+  updateCarousel();
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % wordList.length;
+  updateCarousel();
+});
+
+/* キーボードで←/→操作 */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') {
+    document.getElementById('prevBtn').click();
+  } else if (e.key === 'ArrowRight') {
+    document.getElementById('nextBtn').click();
+  }
+});
+
+/* ----------------- テーマ切替 ----------------- */
+const themeToggle = document.getElementById('themeToggle');
+
+function setTheme(t) {
+  if (t === 'dark') {
+    document.body.classList.add('dark');
+    themeToggle.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark');
+    themeToggle.textContent = '🌙';
+  }
+  localStorage.setItem('theme', t);
+}
+
+/* 保存されたテーマを復元 */
+const saved = localStorage.getItem('theme') || 'light';
+setTheme(saved);
+
+/* ボタンでトグル */
+themeToggle.addEventListener('click', () => {
+  const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+  setTheme(newTheme);
+});
+
+/* ページロード時に初期化 */
+window.addEventListener('DOMContentLoaded', initCarousel);
+</script>
+</body>
+</html>

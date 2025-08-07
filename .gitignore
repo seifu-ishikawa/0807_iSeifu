@@ -1,0 +1,93 @@
+# 環境変数・設定ファイル
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+
+# Claude関連
+.claude/
+CLAUDE.md
+
+# IDE・エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ログファイル
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# 依存関係
+node_modules/
+bower_components/
+
+# ビルド出力
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+
+# テスト
+coverage/
+*.lcov
+.nyc_output/
+
+# 一時ファイル
+*.tmp
+*.temp
+.tmp/
+.temp/
+tmp/
+temp/
+
+# バックアップファイル
+*.bak
+*.backup
+*.old
+*~
+
+# データファイル（必要に応じてコメントアウト）
+# data/
+# *.csv
+# *.xlsx
+
+# サンプルファイルは含める
+!.env.local.sample
+!.env.sample
+!*.sample
+
+# OS固有
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# パッケージマネージャー
+.npm
+.yarn-integrity
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# その他
+*.pid
+*.seed
+*.pid.lock
+.eslintcache
+.stylelintcache

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生徒名簿管理システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f7fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #6d28d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-info {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #7c3aed;
+        }
+
+        .student-count {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #7c3aed;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .gender-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .gender-male {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .gender-female {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .specialty-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: #f0f4ff;
+            color: #4c51bf;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit:hover {
+            background: #059669;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .table-container {
+                padding: 1rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* 空状態 */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <div class="header">
+            <h1>🎓 生徒名簿管理システム</h1>
+            <p>プログラミングスクール 40名クラス</p>
+        </div>
+
+        <!-- コントロール -->
+        <div class="controls">
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="text" id="searchInput" placeholder="名前、フリガナ、得意分野で検索...">
+            </div>
+            <button class="btn btn-primary" onclick="openAddModal()">
+                ➕ 新規生徒追加
+            </button>
+            <button class="btn btn-success" onclick="downloadCSV()">
+                📥 CSVダウンロード
+            </button>
+            <button class="btn btn-info" onclick="document.getElementById('csvUpload').click()">
+                📤 CSVアップロード
+            </button>
+            <input type="file" id="csvUpload" accept=".csv" style="display: none;" onchange="uploadCSV(event)">
+            <div class="student-count">
+                <span id="studentCount">40</span>
+                <span>名生徒</span>
+            </div>
+        </div>
+
+        <!-- テーブル -->
+        <div class="table-container">
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>氏名</th>
+                        <th>フリガナ</th>
+                        <th>生年月日</th>
+                        <th>性別</th>
+                        <th>得意分野</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <!-- データはJavaScriptで動的に生成 -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📚</div>
+                <h3>生徒データがありません</h3>
+                <p>「新規生徒追加」ボタンから生徒を登録してください</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">新規生徒追加</h2>
+            </div>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="studentName">氏名 *</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentFurigana">フリガナ *</label>
+                    <input type="text" id="studentFurigana" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentBirthdate">生年月日 *</label>
+                    <input type="date" id="studentBirthdate" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentGender">性別</label>
+                    <select id="studentGender">
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="studentSpecialty">得意分野</label>
+                    <select id="studentSpecialty">
+                        <option value="Webフロントエンド">Webフロントエンド</option>
+                        <option value="バックエンド開発">バックエンド開発</option>
+                        <option value="データサイエンス">データサイエンス</option>
+                        <option value="UI/UXデザイン">UI/UXデザイン</option>
+                        <option value="機械学習">機械学習</option>
+                        <option value="モバイル開発">モバイル開発</option>
+                        <option value="DevOps">DevOps</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // サンプルデータ
+        let students = [
+            { id: 1, name: '山田太郎', furigana: 'ヤマダタロウ', birthdate: '2005-04-15', gender: '男', specialty: 'Webフロントエンド' },
+            { id: 2, name: '佐藤花子', furigana: 'サトウハナコ', birthdate: '2005-06-22', gender: '女', specialty: 'データサイエンス' },
+            { id: 3, name: '鈴木一郎', furigana: 'スズキイチロウ', birthdate: '2005-08-03', gender: '男', specialty: 'バックエンド開発' },
+            { id: 4, name: '田中美咲', furigana: 'タナカミサキ', birthdate: '2005-02-14', gender: '女', specialty: 'UI/UXデザイン' },
+            { id: 5, name: '高橋健太', furigana: 'タカハシケンタ', birthdate: '2005-11-28', gender: '男', specialty: '機械学習' }
+        ];
+
+        let editingId = null;
+
+        // ローカルストレージから読み込み
+        function loadFromStorage() {
+            const saved = localStorage.getItem('students');
+            if (saved) {
+                students = JSON.parse(saved);
+            }
+        }
+
+        // ローカルストレージに保存
+        function saveToStorage() {
+            localStorage.setItem('students', JSON.stringify(students));
+        }
+
+        // テーブルを更新
+        function updateTable(data = students) {
+            const tbody = document.getElementById('studentTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                tbody.innerHTML = data.map(student => `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.furigana}</td>
+                        <td>${student.birthdate}</td>
+                        <td><span class="gender-badge gender-${student.gender === '男' ? 'male' : 'female'}">${student.gender}</span></td>
+                        <td><span class="specialty-badge">${student.specialty}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit" onclick="editStudent(${student.id})">✏️</button>
+                                <button class="btn-delete" onclick="deleteStudent(${student.id})">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            document.getElementById('studentCount').textContent = data.length;
+        }
+
+        // 検索機能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = students.filter(student => 
+                student.name.toLowerCase().includes(searchTerm) ||
+                student.furigana.toLowerCase().includes(searchTerm) ||
+                student.specialty.toLowerCase().includes(searchTerm)
+            );
+            updateTable(filtered);
+        });
+
+        // モーダルを開く
+        function openAddModal() {
+            if (students.length >= 40) {
+                alert('生徒数が上限（40名）に達しています。');
+                return;
+            }
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '新規生徒追加';
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        // 編集モード
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (!student) return;
+            
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '生徒情報編集';
+            document.getElementById('studentName').value = student.name;
+            document.getElementById('studentFurigana').value = student.furigana;
+            document.getElementById('studentBirthdate').value = student.birthdate;
+            document.getElementById('studentGender').value = student.gender;
+            document.getElementById('studentSpecialty').value = student.specialty;
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        // 削除
+        function deleteStudent(id) {
+            if (confirm('この生徒を削除しますか？')) {
+                students = students.filter(s => s.id !== id);
+                saveToStorage();
+                updateTable();
+            }
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('studentModal').classList.remove('active');
+            document.getElementById('studentForm').reset();
+            editingId = null;
+        }
+
+        // フォーム送信
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const studentData = {
+                name: document.getElementById('studentName').value,
+                furigana: document.getElementById('studentFurigana').value,
+                birthdate: document.getElementById('studentBirthdate').value,
+                gender: document.getElementById('studentGender').value,
+                specialty: document.getElementById('studentSpecialty').value
+            };
+            
+            if (editingId) {
+                const index = students.findIndex(s => s.id === editingId);
+                students[index] = { ...students[index], ...studentData };
+            } else {
+                const newId = Math.max(...students.map(s => s.id), 0) + 1;
+                students.push({ id: newId, ...studentData });
+            }
+            
+            saveToStorage();
+            updateTable();
+            closeModal();
+        });
+
+        // CSVダウンロード
+        function downloadCSV() {
+            const headers = ['氏名', 'フリガナ', '生年月日', '性別', '得意分野'];
+            const rows = students.map(s => [s.name, s.furigana, s.birthdate, s.gender, s.specialty]);
+            
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(field => `"${field}"`).join(',') + '\n';
+            });
+            
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const date = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `生徒名簿_${date}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // CSVアップロード
+        function uploadCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                const headers = lines[0].split(',');
+                
+                const newStudents = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    
+                    const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if (!values || values.length < 5) continue;
+                    
+                    const cleanValues = values.map(v => v.replace(/^"|"$/g, ''));
+                    
+                    newStudents.push({
+                        id: i,
+                        name: cleanValues[0],
+                        furigana: cleanValues[1],
+                        birthdate: cleanValues[2],
+                        gender: cleanValues[3],
+                        specialty: cleanValues[4]
+                    });
+                }
+                
+                if (newStudents.length > 0) {
+                    if (confirm(`${newStudents.length}件のデータをインポートします。既存のデータは置き換えられます。続行しますか？`)) {
+                        students = newStudents;
+                        saveToStorage();
+                        updateTable();
+                    }
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+            event.target.value = '';
+        }
+
+        // キーボードショートカット
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        openAddModal();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        downloadCSV();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        document.getElementById('csvUpload').click();
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        document.getElementById('searchInput').focus();
+                        break;
+                }
+            } else if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // モーダル外クリックで閉じる
+        document.getElementById('studentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 初期化
+        loadFromStorage();
+        updateTable();
+    </script>
+</body>
+</html>

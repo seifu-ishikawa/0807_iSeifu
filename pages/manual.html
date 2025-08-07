@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code 取扱説明書</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-button.secondary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button.secondary:hover {
+            background: #f7f8fa;
+        }
+
+        /* メインコンテンツ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 2rem 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: #667eea;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem;
+            color: #4a5568;
+        }
+
+        .section {
+            margin: 2rem 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .command-box {
+            background: #1e293b;
+            color: #10b981;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tip-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 1.5rem 0;
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .shortcuts-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .kbd {
+            background: #e2e8f0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 0 #cbd5e0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .nav-button {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">📚 Claude Code Manual</div>
+            <div class="nav-links">
+                <a href="manual.html" class="nav-button">取扱説明書</a>
+                <a href="setup_windows.html" class="nav-button secondary">Windows Setup</a>
+                <a href="setup_windows.md" class="nav-button secondary">Setup (Markdown)</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <h1>🤖 Claude Code 取扱説明書</h1>
+            
+            <div class="info-box">
+                <strong>📌 Version:</strong> 1.0 | <strong>最終更新:</strong> 2025年2月7日
+            </div>
+
+            <section class="section">
+                <h2>1. Claude Codeとは</h2>
+                <p>Claude Codeは、Anthropic社が提供する革新的なAI駆動型コーディングアシスタントです。自然言語での対話を通じて、コード生成、デバッグ、リファクタリング、ドキュメント作成など、様々な開発タスクを支援します。</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💻</div>
+                        <h3>コード生成</h3>
+                        <p>自然言語の説明から高品質なコードを自動生成</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>コード解析</h3>
+                        <p>既存コードの解析と改善提案</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🐛</div>
+                        <h3>デバッグ支援</h3>
+                        <p>エラーの特定と修正方法の提案</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>ドキュメント生成</h3>
+                        <p>コードの自動ドキュメント化</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>2. クイックスタート</h2>
+                
+                <h3>2.1 基本的な使い方</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Claude Codeの起動</strong>
+                        <div class="command-box">$ claude code</div>
+                    </li>
+                    <li>
+                        <strong>プロジェクトディレクトリで実行</strong>
+                        <div class="command-box">$ cd my-project<br>$ claude code</div>
+                    </li>
+                    <li>
+                        <strong>質問やタスクを入力</strong>
+                        <div class="command-box">Claude> "Reactコンポーネントを作成してください"</div>
+                    </li>
+                </ol>
+
+                <h3>2.2 インタラクティブモード</h3>
+                <div class="command-box">$ claude -i</div>
+                <p>インタラクティブモードでは、継続的な対話が可能です。</p>
+            </section>
+
+            <section class="section">
+                <h2>3. 主要コマンド</h2>
+                
+                <table class="shortcuts-table">
+                    <thead>
+                        <tr>
+                            <th>コマンド</th>
+                            <th>説明</th>
+                            <th>使用例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>claude code</kbd></td>
+                            <td>Claude Codeを起動</td>
+                            <td>プロジェクトルートで実行</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>claude -i</kbd></td>
+                            <td>インタラクティブモード</td>
+                            <td>継続的な対話セッション</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>claude --help</kbd></td>
+                            <td>ヘルプを表示</td>
+                            <td>利用可能なコマンドを確認</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>claude doctor</kbd></td>
+                            <td>診断ツール実行</td>
+                            <td>環境の問題を検出</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>claude --version</kbd></td>
+                            <td>バージョン確認</td>
+                            <td>インストール済みバージョンを表示</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="section">
+                <h2>4. 活用例</h2>
+                
+                <h3>4.1 コード生成</h3>
+                <div class="command-box">
+Claude> "Pythonで素数判定関数を作成してください"
+                </div>
+                
+                <h3>4.2 バグ修正</h3>
+                <div class="command-box">
+Claude> "このTypeScriptコードのエラーを修正してください: [コードを貼り付け]"
+                </div>
+                
+                <h3>4.3 リファクタリング</h3>
+                <div class="command-box">
+Claude> "このコードをより効率的にリファクタリングしてください"
+                </div>
+                
+                <h3>4.4 テスト作成</h3>
+                <div class="command-box">
+Claude> "この関数のユニットテストを作成してください"
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>5. キーボードショートカット</h2>
+                
+                <table class="shortcuts-table">
+                    <thead>
+                        <tr>
+                            <th>ショートカット</th>
+                            <th>動作</th>
+                            <th>モード</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>C</kbd></td>
+                            <td>処理を中断</td>
+                            <td>全モード</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>D</kbd></td>
+                            <td>セッション終了</td>
+                            <td>インタラクティブ</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>↑</kbd> / <kbd>↓</kbd></td>
+                            <td>履歴を参照</td>
+                            <td>インタラクティブ</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Tab</kbd></td>
+                            <td>オートコンプリート</td>
+                            <td>インタラクティブ</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>L</kbd></td>
+                            <td>画面クリア</td>
+                            <td>インタラクティブ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="section">
+                <h2>6. 高度な機能</h2>
+                
+                <h3>6.1 コンテキスト管理</h3>
+                <p>Claude Codeは、プロジェクトのコンテキストを自動的に理解し、適切な提案を行います。</p>
+                <div class="tip-box">
+                    <strong>💡 ヒント:</strong> <code>.clauderc</code>ファイルでプロジェクト固有の設定を定義できます。
+                </div>
+                
+                <h3>6.2 マルチファイル編集</h3>
+                <p>複数のファイルを同時に編集・生成することが可能です。</p>
+                <div class="command-box">
+Claude> "srcディレクトリにReactコンポーネントとそのテストファイルを作成"
+                </div>
+                
+                <h3>6.3 Git統合</h3>
+                <p>Gitコマンドと連携して、コミットメッセージの生成やPR作成を支援します。</p>
+                <div class="command-box">
+Claude> "最近の変更に対して適切なコミットメッセージを生成"
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>7. ベストプラクティス</h2>
+                
+                <div class="tip-box">
+                    <h3>✅ 推奨事項</h3>
+                    <ul>
+                        <li>明確で具体的な指示を与える</li>
+                        <li>コンテキストを適切に提供する</li>
+                        <li>生成されたコードは必ずレビューする</li>
+                        <li>定期的にAPIキーをローテーションする</li>
+                    </ul>
+                </div>
+                
+                <div class="warning-box">
+                    <h3>⚠️ 注意事項</h3>
+                    <ul>
+                        <li>機密情報をプロンプトに含めない</li>
+                        <li>生成コードを本番環境に直接デプロイしない</li>
+                        <li>APIキーを公開リポジトリにコミットしない</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>8. トラブルシューティング</h2>
+                
+                <h3>8.1 よくある問題</h3>
+                
+                <div class="info-box">
+                    <strong>問題:</strong> "claude: command not found"<br>
+                    <strong>解決:</strong> PATHに追加またはnpmで再インストール
+                </div>
+                
+                <div class="info-box">
+                    <strong>問題:</strong> API認証エラー<br>
+                    <strong>解決:</strong> 環境変数 <code>ANTHROPIC_API_KEY</code> を確認
+                </div>
+                
+                <div class="info-box">
+                    <strong>問題:</strong> ネットワークエラー<br>
+                    <strong>解決:</strong> プロキシ設定を確認、ファイアウォールを調整
+                </div>
+                
+                <h3>8.2 診断コマンド</h3>
+                <div class="command-box">
+$ claude doctor
+$ claude --debug
+$ claude logs --tail 50
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>9. 設定ファイル</h2>
+                
+                <h3>9.1 グローバル設定</h3>
+                <p>場所: <code>~/.claude/config.json</code></p>
+                <div class="command-box">
+{
+  "apiKey": "your-api-key",
+  "model": "claude-3-opus",
+  "temperature": 0.7,
+  "maxTokens": 4096
+}
+                </div>
+                
+                <h3>9.2 プロジェクト設定</h3>
+                <p>場所: <code>.clauderc</code></p>
+                <div class="command-box">
+{
+  "language": "typescript",
+  "framework": "react",
+  "testFramework": "jest",
+  "linter": "eslint"
+}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>10. リソース</h2>
+                
+                <h3>📚 公式ドキュメント</h3>
+                <ul>
+                    <li><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code Documentation</a></li>
+                    <li><a href="https://docs.anthropic.com/">Anthropic API Documentation</a></li>
+                    <li><a href="https://github.com/anthropics/claude-code">GitHub Repository</a></li>
+                </ul>
+                
+                <h3>🎓 学習リソース</h3>
+                <ul>
+                    <li>チュートリアル動画</li>
+                    <li>サンプルプロジェクト</li>
+                    <li>コミュニティフォーラム</li>
+                </ul>
+                
+                <h3>💬 サポート</h3>
+                <ul>
+                    <li>GitHub Issues: バグ報告と機能要望</li>
+                    <li>Discord: コミュニティサポート</li>
+                    <li>Stack Overflow: タグ <code>claude-ai</code></li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Claude Code Manual | Powered by Anthropic</p>
+    </footer>
+</body>
+</html>
