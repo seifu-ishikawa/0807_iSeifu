@@ -1,0 +1,76 @@
+坪内弘毅 9:17
+https://gpt-oss.com/
+
+坪内弘毅 10:59
+https://dev.classmethod.jp/articles/get-started-claude-code-1/
+
+坪内弘毅 11:11
+> 私は40名の生徒を持つ、プログラミングスクールの担任です。ダミーデータで40名、生年月日まで入れた氏名と振り仮名付きつの名簿をcsvでください。
+作成後ルートに保存ください。
+5カラムにして、性別と得意分野を追加してアップデートしてください。
+'/Users/bongin/2025_0807_Seifu/students_roster.csv'を表示するindex.htmlでおしゃれな画面を作ってください。編集可能なJSもつけてください。name_list.hml  │
+│   tとしてルートに保存してください。
+
+坪内弘毅 11:21
+このページの取扱説明書を作り、ヘッダーにリンクのボタンをつけて、ページが遷移ができるようにして。別ファイルでいいです。
+
+坪内弘毅 11:34
+/init
+bongin@BonginnoMacBook-Pro-2 2025_0807_Seifu % ls
+ 20B_index.html                 2nd_index.html                  setup_windows.md
+120index.html                   manual.html                     students_roster.csv
+1st_index.html                  name_list.html
+20250807_AI勉強会.pdf           setup_windows.html
+bongin@BonginnoMacBook-Pro-2 2025_0807_Seifu %
+
+坪内弘毅 11:41
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ > '/Users/bongin/2025_0807_Seifu/index.html'Githubにアップしたいので、このアプリのREADME.mdを作ってください。ルートに設置   │
+│   して。
+git branch
+https://github.com/settings/apps
+
+坪内弘毅 11:47
+https://github.com/settings/tokens
+.env.local
+
+坪内弘毅 11:52
+touch .env.local
+GITHUB_TOKEN=your_PAT
+.env.local.sampleを作って、環境変数が出ない内容にして。
+lsとls -la
+今、この構造です。bongin@BonginnoMacBook-Pro-2 2025_0807_Seifu % ls -la
+  total 96
+  drwxr-xr-x   11 bongin  staff    352  8  7 11:55 .
+  drwxr-x---+ 134 bongin  staff   4288  8  7 11:54 ..
+  drwxr-xr-x@   3 bongin  staff     96  8  7 11:53 .claude
+  -rw-r--r--@   1 bongin  staff     53  8  7 11:51 .env.local
+  -rw-r--r--@   1 bongin  staff    191  8  7 11:54 .env.local.sample
+  -rw-r--r--@   1 bongin  staff   3059  8  7 11:36 CLAUDE.md
+  drwxr-xr-x@   3 bongin  staff     96  8  7 11:38 data
+  drwxr-xr-x@   4 bongin  staff    128  8  7 11:38 docs
+  -rw-r--r--@   1 bongin  staff  22859  8  7 11:55 index.html
+  drwxr-xr-x@   8 bongin  staff    256  8  7 11:38 pages
+  -rw-r--r--@   1 bongin  staff   9763  8  7 11:42 README.md
+  bongin@BonginnoMacBook-Pro-2 2025_0807_Seifu % 
+  .gitignoreを作ってください。
+
+坪内弘毅 12:00
+https://github.com/tsubouchi/0807_iSeifuに対して、git initしてからcommit&Pushして。ブランチはmainにして。
+
+坪内弘毅 12:07
+⏺️ GitHubのAPIを使って、あなたのリポジトリ一覧を取得します。まず、.env.localファイルからPATを読み込んで、APIリクエストを実
+  行します。
+'/Users/bongin/2025_0807_Seifu/.env.local'私のPATを使って、私のレポの全部のリストをください。これを対象に。https://githu
+  b.com/tsubouchi
+
+坪内弘毅 12:21
+https://github.com/tsubouchi/0807_iSeifu
+https://v0.dev/chat
+https://gpt-oss.com/
+
+坪内弘毅 12:27
+以下が私のスクール生徒の名簿です。これに対応した、入社先の会社をマッチングするWEBアプリを作りたいです。機能要件、非機能要件、画面のワイヤーフレームを含めたbasic_design.mdを作って。SOWとして開発がすべて進むに進むように詳細に記載して。
+
+坪内弘毅 12:33
+以下のような学生と企業のマッチングアプリを作りたいです。主要画面から全部の画面を作り、ルーティングまでして画面遷移がされる全画面を開発して。最初、vercelでDeployし、DBはSupabaseを想定。
